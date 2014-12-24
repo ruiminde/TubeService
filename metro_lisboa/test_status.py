@@ -43,18 +43,17 @@ class TestStatus(TestCase):
     url = "http://metrolisboa.pt/status_linha"
 
     def setUp(self):
-        requests = MagicMock()
-        self.metro_lisboa = Status(requests)
+        self.metro_lisboa = Status(MagicMock())
 
     def test_get_status_http_error(self):
         response_mock = MagicMock()
         response_mock.status_code = 500
         response_mock.text = None
 
-        self.metro_lisboa._requests.get(self.url).return_value = response_mock
+        self.metro_lisboa._http_connector.get(self.url).return_value = response_mock
 
         previous_status = self.metro_lisboa._status
-        self.metro_lisboa.update_from_remote_site(self.url)
+        self.metro_lisboa._update_from_remote_site(self.url)
 
         self.assertEqual(previous_status, self.metro_lisboa._status)
 
@@ -62,14 +61,13 @@ class TestStatus(TestCase):
         response_mock = MagicMock()
         response_mock.status_code = 200
         response_mock.text = response_body
-        self.metro_lisboa._requests.get.return_value = response_mock
+        self.metro_lisboa._http_connector.get.return_value = response_mock
 
-        self.metro_lisboa.update_from_remote_site(self.url)
+        self.metro_lisboa._update_from_remote_site(self.url)
 
-        self.metro_lisboa._requests.get.assert_called_once_with(self.url)
+        self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
         self.assertIsNotNone(self.metro_lisboa._last_update)
         self.assertDictEqual({'yellow': 'ok', 'green': 'ok', 'blue': 'ok', 'red': 'ok'}, self.metro_lisboa._status)
-
 
     def test_get_latest(self):
         self.fail("Test not implemented")
