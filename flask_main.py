@@ -1,7 +1,6 @@
 __author__ = 'Rui'
 
-from flask import Flask
-from flask import json
+from flask import json, Flask
 import requests
 
 import metro_lisboa
@@ -17,9 +16,9 @@ URL = "http://app.metrolisboa.pt/status/estado_Linhas.php"
 @app.route("/status/<line>/")
 def status(line=None):
     metro_lisboa_linestatus = metro_lisboa.LineStatus(requests)
-    status = metro_lisboa_linestatus.get_latest(URL, line)
+    line_status = metro_lisboa_linestatus.get_latest(URL, line)
 
-    return json.jsonify(status)
+    return json.jsonify(line_status)
 
 
 if __name__ == "__main__":

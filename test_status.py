@@ -1,12 +1,15 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
+import logging
+
+import requests.exceptions
 
 from metro_lisboa import LineStatus
 
 
 __author__ = 'Rui'
 
-response_body = """
+_RESPONSE_BODY = """
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta charset="UTF-8" />
@@ -37,6 +40,7 @@ timerID = setTimeout("refreshPeriodic()",60000);
 <tr><td style="color:white;background-color:#ED2B74;padding-left:3px;height: 20px;"><b>Linha Vermelha</b></td><td><ul class="semperturbacao"><li>Circula&ccedil;&atilde;o normal</li></ul></td></tr></table></body>
 """
 
+logging.basicConfig(level=logging.INFO)
 
 class TestLineStatus(TestCase):
     metro_lisboa = None
@@ -45,12 +49,25 @@ class TestLineStatus(TestCase):
     def setUp(self):
         self.metro_lisboa = LineStatus(MagicMock())
 
-    def test_get_status_http_error(self):
+    def test_get_status_404(self):
         response_mock = MagicMock()
-        response_mock.status_code = 500
+        response_mock.status_code = 404
         response_mock.text = None
 
-        self.metro_lisboa._http_connector.get(self.url).return_value = response_mock
+        self.metro_lisboa._http_connector.get.return_value = response_mock
+
+        previous_status = self.metro_lisboa._status
+        self.metro_lisboa._update_from_remote_site(self.url)
+
+        self.assertEqual(previous_status, self.metro_lisboa._status)
+
+    def test_get_status_requests_exception(self):
+        response_mock = MagicMock()
+        response_mock.status_code = None
+        response_mock.text = None
+
+        self.metro_lisboa._http_connector.get.side_effect = requests.exceptions.ConnectTimeout(
+            "Requests: Connection timeout")
 
         previous_status = self.metro_lisboa._status
         self.metro_lisboa._update_from_remote_site(self.url)
@@ -60,14 +77,33 @@ class TestLineStatus(TestCase):
     def test_get_status_all_ok(self):
         response_mock = MagicMock()
         response_mock.status_code = 200
-        response_mock.text = response_body
+        response_mock.text = _RESPONSE_BODY
         self.metro_lisboa._http_connector.get.return_value = response_mock
 
         self.metro_lisboa._update_from_remote_site(self.url)
 
         self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
         self.assertIsNotNone(self.metro_lisboa._last_update)
-        self.assertDictEqual({'yellow': 'ok', 'green': 'ok', 'blue': 'ok', 'red': 'ok'}, self.metro_lisboa._status)
+
+        expected = {
+            LineStatus.LINE_RED: LineStatus.STATUS_OK,
+            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
+            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
+            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+        }
+
+        self.assertDictEqual(expected, self.metro_lisboa._status)
+
+
+    def test_parse_response(self):
+        expected = {
+            LineStatus.LINE_RED: LineStatus.STATUS_OK,
+            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
+            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
+            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+        }
+        actual = LineStatus._parse_response(_RESPONSE_BODY)
+        self.assertDictEqual(expected, actual)
 
     def test_get_latest(self):
         self.fail("Test not implemented")
