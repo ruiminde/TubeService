@@ -1,8 +1,7 @@
 __author__ = 'Rui'
 
-import json
-
 from flask import Flask
+from flask import json
 import requests
 
 import metro_lisboa
@@ -20,7 +19,7 @@ def status(line=None):
     metro_lisboa_linestatus = metro_lisboa.LineStatus(requests)
     status = metro_lisboa_linestatus.get_latest(URL, line)
 
-    return json.dumps(status)
+    return json.jsonify(status)
 
 
 if __name__ == "__main__":
