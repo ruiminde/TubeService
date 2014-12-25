@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from metro_lisboa.status import Status
+from metro_lisboa import LineStatus
 
 
 __author__ = 'Rui'
@@ -38,12 +38,12 @@ timerID = setTimeout("refreshPeriodic()",60000);
 """
 
 
-class TestStatus(TestCase):
+class TestLineStatus(TestCase):
     metro_lisboa = None
     url = "http://metrolisboa.pt/status_linha"
 
     def setUp(self):
-        self.metro_lisboa = Status(MagicMock())
+        self.metro_lisboa = LineStatus(MagicMock())
 
     def test_get_status_http_error(self):
         response_mock = MagicMock()
