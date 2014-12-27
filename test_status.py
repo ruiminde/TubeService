@@ -165,5 +165,76 @@ class TestLineStatus(TestCase):
         actual = LineStatus._parse_response(_RESPONSE_BODY_PROBLEMS_BLUE)
         self.assertDictEqual(expected, actual)
 
-    def test_get_latest(self):
-        self.fail("Test not implemented")
+    def test_get_latest_all_ok(self):
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.text = _RESPONSE_BODY_ALL_OK
+        self.metro_lisboa._http_connector.get.return_value = response_mock
+
+        actual = self.metro_lisboa.get_latest(self.url)
+
+        self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
+        self.assertIsNotNone(self.metro_lisboa._last_update)
+
+        expected = {
+            LineStatus.LINE_RED: LineStatus.STATUS_OK,
+            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
+            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
+            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+        }
+
+        self.assertDictEqual(expected, actual)
+
+    def test_get_latest_blue_delay(self):
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.text = _RESPONSE_BODY_PROBLEMS_BLUE
+        self.metro_lisboa._http_connector.get.return_value = response_mock
+
+        actual = self.metro_lisboa.get_latest(self.url)
+
+        self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
+        self.assertIsNotNone(self.metro_lisboa._last_update)
+
+        expected = {
+            LineStatus.LINE_RED: LineStatus.STATUS_OK,
+            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
+            LineStatus.LINE_BLUE: LineStatus.STATUS_DELAY,
+            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+        }
+
+        self.assertDictEqual(expected, actual)
+
+    def test_get_latest_single_ok(self):
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.text = _RESPONSE_BODY_PROBLEMS_BLUE
+        self.metro_lisboa._http_connector.get.return_value = response_mock
+
+        actual = self.metro_lisboa.get_latest(self.url, 'red')
+
+        self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
+        self.assertIsNotNone(self.metro_lisboa._last_update)
+
+        expected = {
+            LineStatus.LINE_RED: LineStatus.STATUS_OK,
+        }
+
+        self.assertDictEqual(expected, actual)
+
+    def test_get_latest_single_delay(self):
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.text = _RESPONSE_BODY_PROBLEMS_BLUE
+        self.metro_lisboa._http_connector.get.return_value = response_mock
+
+        actual = self.metro_lisboa.get_latest(self.url, 'blue')
+
+        self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
+        self.assertIsNotNone(self.metro_lisboa._last_update)
+
+        expected = {
+            LineStatus.LINE_BLUE: LineStatus.STATUS_DELAY,
+        }
+
+        self.assertDictEqual(expected, actual)
