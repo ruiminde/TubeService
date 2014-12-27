@@ -21,7 +21,7 @@ class LineStatus(object):
 
     _STATUS_NAMES_MAP = {
         'Circulação normal': STATUS_OK,
-        'XXXXXXXXXXXXXXX': STATUS_DELAY,
+        'existem perturbações na circulação. O tempo de espera pode ser superior ao normal. Pedimos desculpa pelo incómodo causado': STATUS_DELAY,
     }
     _LINE_NAMES_MAP = {
         'Linha Azul': LINE_BLUE,
