@@ -1,8 +1,8 @@
 TubeService
 ===========
 
-Service to display the status of Lisbon subway lines.
-Scrapes the public site of metro de lisboa and publishes the status over a REST web service done with Flask
+A RESTful web service for the status of Lisboa's subway lines.
+Scrapes the public site of metro de Lisboa and publishes the status over a REST web service done with Flask
 
 Dependencies
 ------------
@@ -11,4 +11,3 @@ Dependencies
 * Flask
 * BeautifulSoup4
 * Requests
-
