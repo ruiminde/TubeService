@@ -7,7 +7,7 @@ Scrapes the public site of metro de Lisboa and publishes the status over a REST 
 Dependencies
 ------------
 
-* Python 3.4
+* Python 3
 * Flask
 * BeautifulSoup4
 * Requests
