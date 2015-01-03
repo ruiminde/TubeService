@@ -71,6 +71,38 @@ timerID = setTimeout("refreshPeriodic()",60000);
 <tr><td style="color:white;background-color:#ED2B74;padding-left:3px;height: 20px;"><b>Linha Vermelha</b></td><td><ul class="semperturbacao"><li>Circula&ccedil;&atilde;o normal</li></ul></td></tr></table></body>
 """
 
+_RESPONSE_BODY_PROBLEMS_STATION = """
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta charset="UTF-8" />
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="jquery.li-scroller.1.0.js"></script>
+<link rel="stylesheet" href="li-scroller.css" type="text/css" media="screen">
+<script type="text/javascript"> $(function(){ $("ul#ticker01").liScroll({travelocity: 0.03});
+$("ul#ticker02").liScroll({travelocity: 0.03});
+$("ul#ticker03").liScroll({travelocity: 0.03});
+$("ul#ticker04").liScroll({travelocity: 0.03});
+});
+</script>
+<SCRIPT>
+function refreshPeriodic() {
+   // Reload the page every 60 seconds
+   location.reload();
+   timerID = setTimeout("refreshPeriodic()",60000);
+}
+timerID = setTimeout("refreshPeriodic()",60000);
+</SCRIPT>
+</head>
+<body>
+<table cellpadding=0 cellspacing=0 style="font-family:Arial;">
+<tr><td style="color:white;background-color:#FDB813;padding-left:3px;" width=120><b>Linha Amarela</b></td><td style="align">
+<ul class="semperturbacao"><li>Circula&ccedil;&atilde;o normal</li></ul></td></tr>
+<tr><td style="color:white;background-color:#4E84C4;padding-left:3px;height: 20px;"><b>Linha Azul</b></td><td><ul class="semperturbacao"><li>Circula&ccedil;&atilde;o normal</li></ul></td></tr>
+<tr><td style="color:white;background-color:#00A9A6;padding-left:3px;height: 20px;"><b>Linha Verde</b></td><td><ul id="ticker03"><li>Devido a anomalia na estação está interrompida a circulação na linha entre as estações  Cais do Sodré e Martim Moniz. Não é possível prever a duração da interrupção, que poderá ser prolongada. Pedimos desculpa pelo incómodo causado</li></ul></td></tr>
+<tr><td style="color:white;background-color:#ED2B74;padding-left:3px;height: 20px;"><b>Linha Vermelha</b></td><td><ul class="semperturbacao"><li>Circula&ccedil;&atilde;o normal</li></ul></td></tr></table></body>
+"""
+
+
 logging.basicConfig(level=logging.INFO)
 
 class TestLineStatus(TestCase):
@@ -235,6 +267,43 @@ class TestLineStatus(TestCase):
 
         expected = {
             LineStatus.LINE_BLUE: LineStatus.STATUS_DELAY,
+        }
+
+        self.assertDictEqual(expected, actual)
+
+    def test_get_latest_single_delay_station_problems(self):
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.text = _RESPONSE_BODY_PROBLEMS_STATION
+        self.metro_lisboa._http_connector.get.return_value = response_mock
+
+        actual = self.metro_lisboa.get_latest(self.url, 'green')
+
+        self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
+        self.assertIsNotNone(self.metro_lisboa._last_update)
+
+        expected = {
+            LineStatus.LINE_GREEN: LineStatus.STATUS_DELAY,
+        }
+
+        self.assertDictEqual(expected, actual)
+
+    def test_get_latest_station_problems(self):
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.text = _RESPONSE_BODY_PROBLEMS_STATION
+        self.metro_lisboa._http_connector.get.return_value = response_mock
+
+        actual = self.metro_lisboa.get_latest(self.url)
+
+        self.metro_lisboa._http_connector.get.assert_called_once_with(self.url)
+        self.assertIsNotNone(self.metro_lisboa._last_update)
+
+        expected = {
+            LineStatus.LINE_RED: LineStatus.STATUS_OK,
+            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
+            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
+            LineStatus.LINE_GREEN: LineStatus.STATUS_DELAY,
         }
 
         self.assertDictEqual(expected, actual)

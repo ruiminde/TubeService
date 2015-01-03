@@ -19,10 +19,13 @@ class LineStatus(object):
     STATUS_OK = 'ok'
     STATUS_DELAY = 'delay'
 
-    _STATUS_NAMES_MAP = {
+    _STATUS_KEYWORDS_MAP = {
         'Circulação normal': STATUS_OK,
-        'existem perturbações na circulação. O tempo de espera pode ser superior ao normal. Pedimos desculpa pelo incómodo causado': STATUS_DELAY,
+        'existem perturbações na circulação': STATUS_DELAY,
+        'está interrompida a circulação na linha entre as estações': STATUS_DELAY,
+        '__NO__MATCH__': STATUS_UNKNOWN
     }
+
     _LINE_NAMES_MAP = {
         'Linha Azul': LINE_BLUE,
         'Linha Verde': LINE_GREEN,
@@ -85,9 +88,17 @@ class LineStatus(object):
             logging.error("Parse failed")
             raise ParseError()
 
-        result = {cls._LINE_NAMES_MAP[parsed_line]: cls._STATUS_NAMES_MAP[parsed_status]
+        result = {cls._LINE_NAMES_MAP[parsed_line]: cls._match_status_keyword(parsed_status)
                   for parsed_line, parsed_status in parsed.items()}
         return result
+
+    @classmethod
+    def _match_status_keyword(cls, status_message):
+        for keyword, status in cls._STATUS_KEYWORDS_MAP.items():
+            if keyword in status_message:
+                return status
+        else:
+            return cls.STATUS_UNKNOWN
 
     def get_latest(self, destination_url, line=None):
         """
