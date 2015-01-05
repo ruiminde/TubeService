@@ -18,11 +18,13 @@ class LineStatus(object):
     STATUS_UNKNOWN = None
     STATUS_OK = 'ok'
     STATUS_DELAY = 'delay'
+    STATUS_HALT = 'halt'
 
     _STATUS_KEYWORDS_MAP = {
         'Circulação normal': STATUS_OK,
         'existem perturbações na circulação': STATUS_DELAY,
         'está interrompida a circulação na linha entre as estações': STATUS_DELAY,
+        'está interrompida a circulação.': STATUS_HALT,
         '__NO__MATCH__': STATUS_UNKNOWN
     }
 
