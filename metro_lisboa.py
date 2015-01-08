@@ -19,13 +19,26 @@ class LineStatus(object):
     STATUS_OK = 'ok'
     STATUS_DELAY = 'delay'
     STATUS_HALT = 'halt'
+    STATUS_PARTIAL_HALT = 'partial_hat'
+
+    REASON_UNKNOWN = None
+    REASON_TROUBLES = "There's a flood"
+    REASON_PARTIAL_HALT = "Yo mama's so fat..."
+    REASON_HALT = "No electricity"
 
     _STATUS_KEYWORDS_MAP = {
         'Circulação normal': STATUS_OK,
         'existem perturbações na circulação': STATUS_DELAY,
-        'está interrompida a circulação na linha entre as estações': STATUS_DELAY,
+        'está interrompida a circulação na linha entre as estações': STATUS_PARTIAL_HALT,
         'está interrompida a circulação.': STATUS_HALT,
         '__NO__MATCH__': STATUS_UNKNOWN
+    }
+
+    _REASON_KEYWORDS_MAP = {
+        'existem perturbações na circulação': REASON_TROUBLES,
+        'está interrompida a circulação na linha entre as estações': REASON_PARTIAL_HALT,
+        'está interrompida a circulação.': REASON_HALT,
+        '__NO__MATCH__': REASON_UNKNOWN
     }
 
     _LINE_NAMES_MAP = {
@@ -90,7 +103,8 @@ class LineStatus(object):
             logging.error("Parse failed")
             raise ParseError()
 
-        result = {cls._LINE_NAMES_MAP[parsed_line]: cls._match_status_keyword(parsed_status)
+        result = {cls._LINE_NAMES_MAP[parsed_line]: (
+        cls._match_status_keyword(parsed_status), cls._match_reason_keyword(parsed_status))
                   for parsed_line, parsed_status in parsed.items()}
         return result
 
@@ -101,6 +115,15 @@ class LineStatus(object):
                 return status
         else:
             return cls.STATUS_UNKNOWN
+
+    @classmethod
+    def _match_reason_keyword(cls, status_message):
+        for keyword, reason in cls._REASON_KEYWORDS_MAP.items():
+            if keyword in status_message:
+                return reason
+        else:
+            return cls.REASON_UNKNOWN
+
 
     def get_latest(self, destination_url, line=None):
         """

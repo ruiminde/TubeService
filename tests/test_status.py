@@ -179,10 +179,10 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
         }
 
         self.assertDictEqual(expected, self.metro_lisboa._status)
@@ -199,30 +199,30 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_DELAY,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_DELAY, LineStatus.REASON_TROUBLES),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
         }
 
         self.assertDictEqual(expected, self.metro_lisboa._status)
 
     def test_parse_response_all_ok(self):
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
         }
         actual = LineStatus._parse_response(_RESPONSE_BODY_ALL_OK)
         self.assertDictEqual(expected, actual)
 
     def test_parse_response_problems_blue(self):
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_DELAY,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_DELAY, LineStatus.REASON_TROUBLES),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
         }
         actual = LineStatus._parse_response(_RESPONSE_BODY_PROBLEMS_BLUE)
         self.assertDictEqual(expected, actual)
@@ -239,10 +239,10 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
         }
 
         self.assertDictEqual(expected, actual)
@@ -259,10 +259,10 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_DELAY,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_DELAY, LineStatus.REASON_TROUBLES),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
         }
 
         self.assertDictEqual(expected, actual)
@@ -279,7 +279,7 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
         }
 
         self.assertDictEqual(expected, actual)
@@ -296,7 +296,7 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_BLUE: LineStatus.STATUS_DELAY,
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_DELAY, LineStatus.REASON_TROUBLES),
         }
 
         self.assertDictEqual(expected, actual)
@@ -313,7 +313,7 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_GREEN: LineStatus.STATUS_DELAY,
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_PARTIAL_HALT, LineStatus.REASON_PARTIAL_HALT)
         }
 
         self.assertDictEqual(expected, actual)
@@ -330,10 +330,10 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_OK,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_DELAY,
+            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_PARTIAL_HALT, LineStatus.REASON_PARTIAL_HALT),
         }
 
         self.assertDictEqual(expected, actual)
@@ -350,10 +350,10 @@ class TestLineStatus(TestCase):
         self.assertIsNotNone(self.metro_lisboa._last_update)
 
         expected = {
-            LineStatus.LINE_RED: LineStatus.STATUS_HALT,
-            LineStatus.LINE_YELLOW: LineStatus.STATUS_OK,
-            LineStatus.LINE_BLUE: LineStatus.STATUS_OK,
-            LineStatus.LINE_GREEN: LineStatus.STATUS_OK,
+            LineStatus.LINE_RED: (LineStatus.STATUS_HALT, LineStatus.REASON_HALT),
+            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
+            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
         }
 
         self.assertDictEqual(expected, actual)
