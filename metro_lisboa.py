@@ -19,7 +19,7 @@ class LineStatus(object):
     STATUS_OK = 'ok'
     STATUS_DELAY = 'delay'
     STATUS_HALT = 'halt'
-    STATUS_PARTIAL_HALT = 'partial_hat'
+    STATUS_PARTIAL_HALT = 'partial_halt'
 
     REASON_UNKNOWN = None
     REASON_TROUBLES = "There's a flood"
