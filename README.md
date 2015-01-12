@@ -3,7 +3,7 @@ A RESTful web service for the status of Lisboa's subway lines.
 Scrapes the public site of metro de Lisboa and publishes the status over a REST web service done with Flask
 
 ## Dependencies
-* Python 3.3
+* Python >= 3.3
 * Flask
 * BeautifulSoup4
 * Requests
@@ -21,4 +21,4 @@ TBD
 
     curl -X GET http://HOST/status/<line>
     
-**line = [yellow | red | blue | green]**
+line = [yellow | red | blue | green]
