@@ -19,7 +19,7 @@ class LineStatus(object):
     STATUS_OK = 'ok'
     STATUS_DELAY = 'delay'
     STATUS_HALT = 'halt'
-    STATUS_PARTIAL_HALT = 'partial_hat'
+    STATUS_PARTIAL_HALT = 'partial_halt'
 
     REASON_UNKNOWN = None
     REASON_TROUBLES = "There's a flood"
@@ -29,15 +29,19 @@ class LineStatus(object):
     _STATUS_KEYWORDS_MAP = {
         'Circulação normal': STATUS_OK,
         'existem perturbações na circulação': STATUS_DELAY,
+        'a circulação encontra-se com perturbações': STATUS_DELAY,
         'está interrompida a circulação na linha entre as estações': STATUS_PARTIAL_HALT,
         'está interrompida a circulação.': STATUS_HALT,
+        'a circulação está interrompida': STATUS_HALT,
         '__NO__MATCH__': STATUS_UNKNOWN
     }
 
     _REASON_KEYWORDS_MAP = {
         'existem perturbações na circulação': REASON_TROUBLES,
+        'a circulação encontra-se com perturbações': REASON_TROUBLES,
         'está interrompida a circulação na linha entre as estações': REASON_PARTIAL_HALT,
         'está interrompida a circulação.': REASON_HALT,
+        'a circulação está interrompida': REASON_HALT,
         '__NO__MATCH__': REASON_UNKNOWN
     }
 
