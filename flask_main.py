@@ -9,13 +9,11 @@ import metro_lisboa
 
 
 app = Flask(__name__)
-
-HTML_BACKEND_URL = "http://app.metrolisboa.pt/status/estado_Linhas.php"
-JSON_BACKEND_URL = "http://app.metrolisboa.pt/status/getLinhas.php"
+app.config.from_object('settings')
 
 _backends = {
-    'json': {'url': JSON_BACKEND_URL, 'module': 'json_backend'},
-    'html': {'url': HTML_BACKEND_URL, 'module': 'html_backend'},
+    'json': {'url': app.config['JSON_BACKEND_URL'], 'module': 'json_backend'},
+    'html': {'url': app.config['HTML_BACKEND_URL'], 'module': 'html_backend'},
 }
 
 
@@ -33,7 +31,6 @@ def status(line=None):
 
 
 if __name__ == "__main__":
-    app.config['ACTIVE_BACKEND'] = 'json'
     app.run(debug=True)
 
 
