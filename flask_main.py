@@ -1,5 +1,7 @@
 __author__ = 'Rui'
 
+import importlib
+
 from flask import json, Flask
 import requests
 
@@ -8,18 +10,30 @@ import metro_lisboa
 
 app = Flask(__name__)
 
-URL = "http://app.metrolisboa.pt/status/estado_Linhas.php"
+HTML_BACKEND_URL = "http://app.metrolisboa.pt/status/estado_Linhas.php"
+JSON_BACKEND_URL = "http://app.metrolisboa.pt/status/getLinhas.php"
+
+_backends = {
+    'json': {'url': JSON_BACKEND_URL, 'module': 'json_backend'},
+    'html': {'url': HTML_BACKEND_URL, 'module': 'html_backend'},
+}
 
 
 @app.route("/")
 @app.route("/status/")
 @app.route("/status/<line>/")
 def status(line=None):
-    metro_lisboa_linestatus = metro_lisboa.LineStatus(requests)
-    line_status = metro_lisboa_linestatus.get_latest(URL, line)
+    active_backend = _backends[app.config['ACTIVE_BACKEND']]
+    backend_module = importlib.import_module(active_backend['module'])
+    url = active_backend['url']
+    metro_lisboa_linestatus = metro_lisboa.LineStatus(requests, backend_module)
+    line_status = metro_lisboa_linestatus.get_latest(url, line)
 
     return json.jsonify(line_status)
 
 
 if __name__ == "__main__":
+    app.config['ACTIVE_BACKEND'] = 'json'
     app.run(debug=True)
+
+
