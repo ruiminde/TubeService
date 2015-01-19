@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __author__ = 'Rui'
 
 from datetime import datetime
@@ -34,6 +36,7 @@ class LineStatus(object):
         """
 
         :type http_connector: Requests
+        :param backend: Module to be used to process the content from the metro website
         """
         self._http_connector = http_connector
         self._backend = backend

@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 __author__ = 'Rui'
 
+import unittest
 from unittest import TestCase
 import logging
 
@@ -306,3 +308,7 @@ class TestHTMLBackend(TestCase):
 
         actual = html_backend.parse_response(_RESPONSE_BODY_PROBLEMS_STATION5)
         self.assertDictEqual(expected, actual)
+
+
+if __name__ == '__main__':
+    unittest.main()

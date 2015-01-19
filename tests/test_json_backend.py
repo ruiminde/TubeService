@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 __author__ = 'Rui'
 
+import unittest
 from unittest import TestCase
 import logging
 
@@ -46,3 +49,7 @@ class TestJSONBackend(TestCase):
 
         actual = json_backend.parse_response(_RESPONSE_UNKNOWN_STATUS)
         self.assertDictEqual(expected, actual)
+
+
+if __name__ == '__main__':
+    unittest.main()

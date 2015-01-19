@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __author__ = 'Rui'
 
 import importlib
@@ -10,6 +12,14 @@ import metro_lisboa
 
 app = Flask(__name__)
 app.config.from_object('settings')
+from models import db
+
+db.init_app(app)
+
+with app.app_context():
+    # Extensions like Flask-SQLAlchemy now know what the "current" app
+    # is while within this block. Therefore, you can now run........
+    db.create_all()
 
 _backends = {
     'json': {'url': app.config['JSON_BACKEND_URL'], 'module': 'json_backend'},
@@ -29,8 +39,14 @@ def status(line=None):
 
     return json.jsonify(line_status)
 
-
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
+
+
+
+
 
 

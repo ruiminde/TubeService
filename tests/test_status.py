@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock
 import logging
@@ -44,3 +47,5 @@ class TestLineStatus(TestCase):
         self.assertEqual(previous_status, self.metro_lisboa._status)
 
 
+if __name__ == '__main__':
+    unittest.main()
