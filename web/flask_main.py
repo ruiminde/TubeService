@@ -7,25 +7,22 @@ import importlib
 from flask import json, Flask
 import requests
 
-import metro_lisboa
-
+from lib import metro_lisboa
+import settings.web as config
 
 app = Flask(__name__)
-app.config.from_object('settings')
-from models import db
+app.config.from_object(config)
+from tubeservice.models import db
 
 db.init_app(app)
 
 with app.app_context():
-    # Extensions like Flask-SQLAlchemy now know what the "current" app
-    # is while within this block. Therefore, you can now run........
     db.create_all()
 
 _backends = {
-    'json': {'url': app.config['JSON_BACKEND_URL'], 'module': 'json_backend'},
-    'html': {'url': app.config['HTML_BACKEND_URL'], 'module': 'html_backend'},
+    'json': {'url': app.config['JSON_BACKEND_URL'], 'module': 'lib.json_backend'},
+    'html': {'url': app.config['HTML_BACKEND_URL'], 'module': 'lib.html_backend'},
 }
-
 
 @app.route("/")
 @app.route("/status/")

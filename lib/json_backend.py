@@ -5,21 +5,8 @@ __author__ = 'Rui'
 import logging
 import json
 
-LINE_YELLOW = 'yellow'
-LINE_RED = 'red'
-LINE_GREEN = 'green'
-LINE_BLUE = 'blue'
+from tubeservice.datacontract import *
 
-STATUS_UNKNOWN = None
-STATUS_OK = 'ok'
-STATUS_DELAY = 'delay'
-STATUS_HALT = 'halt'
-STATUS_PARTIAL_HALT = 'partial_halt'
-
-REASON_UNKNOWN = None
-# REASON_TROUBLES = "There's a flood"
-#REASON_PARTIAL_HALT = "Yo mama's so fat..."
-#REASON_HALT = "No electricity"
 
 _LINE_NAMES_MAP = {
     'azul': LINE_BLUE,
@@ -29,17 +16,22 @@ _LINE_NAMES_MAP = {
 }
 
 _STATUS_MAP = {
-    'Ok': STATUS_OK,
+    '0': STATUS_OK,
+    '1': STATUS_DELAY,
+    '3': STATUS_HALT,
     '__NO__MATCH__': STATUS_UNKNOWN
 }
 
 _REASON_MAP = {
-    '0': REASON_UNKNOWN
+    'existem perturbações na circulação. O tempo de espera pode ser superior ao normal.': REASON_LINE_TROUBLES,
+    'Devido a incidente com passageiro': REASON_PASSENGER_INCIDENT,
+    'Devido a avaria de comboio': REASON_TRAIN_PROBLEM,
+    ' Ok': REASON_NO_PROBLEM,
 }
 
-_REASON_LINE_MAP = {
-    LINE_BLUE: 'tipo_msg_am',
-    LINE_YELLOW: 'tipo_msg_az',
+_STATUS_LINE_MAP = {
+    LINE_BLUE: 'tipo_msg_az',
+    LINE_YELLOW: 'tipo_msg_am',
     LINE_GREEN: 'tipo_msg_vd',
     LINE_RED: 'tipo_msg_vm',
 }
@@ -51,8 +43,8 @@ def parse_response(json_text):
         json_object = json.loads(json_text)
 
         for source_line_name, line_name in _LINE_NAMES_MAP.items():
-            status_code = json_object[source_line_name]
-            reason_code = json_object[_REASON_LINE_MAP[line_name]]
+            reason_code = json_object[source_line_name]
+            status_code = json_object[_STATUS_LINE_MAP[line_name]]
             line_status = _get_status(status_code)
             reason = _get_reason(reason_code)
 
@@ -66,7 +58,11 @@ def parse_response(json_text):
 
 
 def _get_reason(reason_code):
-    return _REASON_MAP.get(reason_code, REASON_UNKNOWN)
+    for reason_key, reason in _REASON_MAP.items():
+        if reason_key in reason_code:
+            return reason
+    else:
+        return REASON_UNKNOWN
 
 
 def _get_status(status_code):

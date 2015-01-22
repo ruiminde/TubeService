@@ -4,7 +4,7 @@ __author__ = 'Rui'
 
 import logging
 
-import html_parser
+from lib import html_parser
 
 
 LINE_YELLOW = 'yellow'

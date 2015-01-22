@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
+
 __author__ = 'Rui'
 
 import unittest
 from unittest import TestCase
-import logging
 
-from metro_lisboa import LineStatus
-import html_backend
+from lib import html_parser
 
 
-_RESPONSE_BODY_ALL_OK = """
+_RESPONSE_ALL_OK = """
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta charset="UTF-8" />
@@ -40,7 +39,7 @@ timerID = setTimeout("refreshPeriodic()",60000);
 <tr><td style="color:white;background-color:#ED2B74;padding-left:3px;height: 20px;"><b>Linha Vermelha</b></td><td><ul class="semperturbacao"><li>Circula&ccedil;&atilde;o normal</li></ul></td></tr></table></body>
 """
 
-_RESPONSE_BODY_PROBLEMS_BLUE = """
+_RESPONSE_PROBLEMS_BLUE = """
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta charset="UTF-8" />
@@ -226,87 +225,85 @@ timerID = setTimeout("refreshPeriodic()",60000);
 <tr><td style="color:white;background-color:#ED2B74;padding-left:3px;height: 20px;"><b>Linha Vermelha</b></td><td><ul class="semperturbacao"><li>Circula&ccedil;&atilde;o normal</li></ul></td></tr></table></body>
 """
 
-logging.basicConfig(level=logging.INFO)
+class TestHTMLParser(TestCase):
+    def setUp(self):
+        self.maxDiff = None
 
-
-class TestHTMLBackend(TestCase):
-    def test_parse_response_all_ok(self):
+    def test_get_line_status_all_ok(self):
         expected = {
-            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
+            'Linha Vermelha': 'Circulação normal',
+            'Linha Amarela': 'Circulação normal',
+            'Linha Azul': 'Circulação normal',
+            'Linha Verde': 'Circulação normal'
         }
 
-        actual = html_backend.parse_response(_RESPONSE_BODY_ALL_OK)
+        actual = html_parser.get_line_status(_RESPONSE_ALL_OK)
         self.assertDictEqual(expected, actual)
 
-    def test_parse_response_problems_blue(self):
+    def test_get_line_status_problem_blue(self):
         expected = {
-            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_BLUE: (LineStatus.STATUS_DELAY, html_backend.REASON_TROUBLES),
-            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
+            'Linha Vermelha': 'Circulação normal',
+            'Linha Amarela': 'Circulação normal',
+            'Linha Azul': 'existem perturbações na circulação. O tempo de espera pode ser superior ao normal. Pedimos desculpa pelo incómodo causado',
+            'Linha Verde': 'Circulação normal'
         }
-        actual = html_backend.parse_response(_RESPONSE_BODY_PROBLEMS_BLUE)
+
+        actual = html_parser.get_line_status(_RESPONSE_PROBLEMS_BLUE)
         self.assertDictEqual(expected, actual)
 
-
-    def test_parse_response_station_problems1(self):
+    def test_get_line_status_problem_station1(self):
         expected = {
-            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_GREEN: (LineStatus.STATUS_PARTIAL_HALT, html_backend.REASON_PARTIAL_HALT),
+            'Linha Vermelha': 'Circulação normal',
+            'Linha Amarela': 'Circulação normal',
+            'Linha Azul': 'Circulação normal',
+            'Linha Verde': 'Devido a anomalia na estação está interrompida a circulação na linha entre as estações  Cais do Sodré e Martim Moniz. Não é possível prever a duração da interrupção, que poderá ser prolongada. Pedimos desculpa pelo incómodo causado'
         }
 
-        actual = html_backend.parse_response(_RESPONSE_BODY_PROBLEMS_STATION1)
+        actual = html_parser.get_line_status(_RESPONSE_BODY_PROBLEMS_STATION1)
         self.assertDictEqual(expected, actual)
 
-
-    def test_parse_response_station_problems2(self):
+    def test_get_line_status_problem_stopped2(self):
         expected = {
-            LineStatus.LINE_RED: (LineStatus.STATUS_HALT, html_backend.REASON_HALT),
-            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_BLUE: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
+            'Linha Vermelha': 'Devido a causa alheia ao Metro está interrompida a circulação. Não é possível prever a duração da interrupção, que poderá ser prolongada. Pedimos desculpa pelo incómodo causado',
+            'Linha Amarela': 'Circulação normal',
+            'Linha Azul': 'Circulação normal',
+            'Linha Verde': 'Circulação normal'
         }
 
-        actual = html_backend.parse_response(_RESPONSE_BODY_PROBLEMS_STATION2)
+        actual = html_parser.get_line_status(_RESPONSE_BODY_PROBLEMS_STATION2)
         self.assertDictEqual(expected, actual)
 
-    def test_parse_response_station_problems3(self):
+    def test_get_line_status_problem_stopped3(self):
         expected = {
-            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_BLUE: (LineStatus.STATUS_HALT, html_backend.REASON_HALT),
-            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
+            'Linha Vermelha': 'Circulação normal',
+            'Linha Amarela': 'Circulação normal',
+            'Linha Azul': 'Devido a avaria na sinalização está interrompida a circulação. Não é possível prever a duração da interrupção, que poderá ser prolongada. Pedimos desculpa pelo incómodo causado',
+            'Linha Verde': 'Circulação normal'
         }
 
-        actual = html_backend.parse_response(_RESPONSE_BODY_PROBLEMS_STATION3)
+        actual = html_parser.get_line_status(_RESPONSE_BODY_PROBLEMS_STATION3)
         self.assertDictEqual(expected, actual)
 
-
-    def test_parse_response_station_problems4(self):
+    def test_get_line_status_problem_stopped4(self):
         expected = {
-            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_BLUE: (LineStatus.STATUS_DELAY, html_backend.REASON_TROUBLES),
-            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
+            'Linha Vermelha': 'Circulação normal',
+            'Linha Amarela': 'Circulação normal',
+            'Linha Azul': 'devido a avaria na sinalização, a circulação encontra-se com perturbações. O tempo de espera pode ser superior ao normal. Pedimos desculpa pelo incómodo',
+            'Linha Verde': 'Circulação normal'
         }
 
-        actual = html_backend.parse_response(_RESPONSE_BODY_PROBLEMS_STATION4)
+        actual = html_parser.get_line_status(_RESPONSE_BODY_PROBLEMS_STATION4)
         self.assertDictEqual(expected, actual)
 
-    def test_parse_response_station_problems5(self):
+    def test_get_line_status_problem_stopped5(self):
         expected = {
-            LineStatus.LINE_RED: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_YELLOW: (LineStatus.STATUS_OK, None),
-            LineStatus.LINE_BLUE: (LineStatus.STATUS_HALT, html_backend.REASON_HALT),
-            LineStatus.LINE_GREEN: (LineStatus.STATUS_OK, None),
+            'Linha Vermelha': 'Circulação normal',
+            'Linha Amarela': 'Circulação normal',
+            'Linha Azul': 'Devido a incidente com passageiro, a circulação está interrompida desde as 07:50. Esperamos retomar a circulação num período inferior a 15 minutos. Pedimos desculpa pelo incómodo',
+            'Linha Verde': 'Circulação normal'
         }
 
-        actual = html_backend.parse_response(_RESPONSE_BODY_PROBLEMS_STATION5)
+        actual = html_parser.get_line_status(_RESPONSE_BODY_PROBLEMS_STATION5)
         self.assertDictEqual(expected, actual)
 
 

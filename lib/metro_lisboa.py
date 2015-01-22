@@ -8,18 +8,10 @@ import logging
 import requests
 import requests.exceptions
 
+from tubeservice.datacontract import *
+
 
 class LineStatus(object):
-    LINE_YELLOW = 'yellow'
-    LINE_RED = 'red'
-    LINE_GREEN = 'green'
-    LINE_BLUE = 'blue'
-
-    STATUS_UNKNOWN = None
-    STATUS_OK = 'ok'
-    STATUS_DELAY = 'delay'
-    STATUS_HALT = 'halt'
-    STATUS_PARTIAL_HALT = 'partial_halt'
 
     _http_connector = None
     _backend = None
