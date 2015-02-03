@@ -7,8 +7,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-
 class LineStatusLog(Base):
+    __tablename__ = 'line_status_log'
+
     id = Column(Integer, primary_key=True)
     line_name = Column(String(20))
     status = Column(String(20))
@@ -23,3 +24,4 @@ class LineStatusLog(Base):
 
     def __repr__(self):
         return '<LineStatusLog %r %r %r %r>' % (self.id, self.line_name, self.status, self.timestamp)
+
