@@ -15,19 +15,15 @@ from lib import metro_lisboa
 app = Celery()
 app.config_from_object(config)
 
-_backends = {
-    'json': {'url': web_config['JSON_BACKEND_URL'], 'module': 'lib.json_backend'},
-    'html': {'url': web_config['HTML_BACKEND_URL'], 'module': 'lib.html_backend'},
-}
-
 
 @app.task
 def get_line_status():
-    active_backend = _backends[app.config['ACTIVE_BACKEND']]
-    backend_module = importlib.import_module(active_backend['module'])
-    url = active_backend['url']
+    active_backend = 'json'
+    backend_module = importlib.import_module('lib.json_backend')
+    url = "http://app.metrolisboa.pt/status/getLinhas.php"
     metro_lisboa_linestatus = metro_lisboa.LineStatus(requests, backend_module)
     all_lines_status = metro_lisboa_linestatus.get_latest(url)
+#    logger.info(all_lines_status)
 
     # TODO: Get DB context; iterate over all_lines_status; save data
 
