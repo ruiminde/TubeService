@@ -6,18 +6,15 @@ import importlib
 
 from flask import json, Flask
 import requests
+from flask_sqlalchemy import SQLAlchemy
 
-from lib import metro_lisboa
-import settings.web as config
+from tubeservice import metro_lisboa
+import settings.config as config
 
 app = Flask(__name__)
 app.config.from_object(config)
-from tubeservice.models import db
 
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
+db = SQLAlchemy(app)
 
 _backends = {
     'json': {'url': app.config['JSON_BACKEND_URL'], 'module': 'lib.json_backend'},
@@ -37,7 +34,7 @@ def status(line=None):
     return json.jsonify(line_status)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
 
 
 

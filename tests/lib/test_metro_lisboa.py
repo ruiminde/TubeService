@@ -7,7 +7,7 @@ import logging
 
 import requests.exceptions
 
-from lib.metro_lisboa import LineStatus
+from tubeservice.metro_lisboa import LineStatus
 
 
 __author__ = 'Rui'

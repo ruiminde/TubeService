@@ -2,17 +2,18 @@
 
 __author__ = 'Rui'
 
-from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
-db = SQLAlchemy()
+Base = declarative_base()
 
 
-class LineStatusLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    line_name = db.Column(db.String(20))
-    status = db.Column(db.String(20))
-    reason = db.Column(db.String(512))
-    timestamp = db.Column(db.DateTime, index=True)
+class LineStatusLog(Base):
+    id = Column(Integer, primary_key=True)
+    line_name = Column(String(20))
+    status = Column(String(20))
+    reason = Column(String(512))
+    timestamp = Column(DateTime, index=True)
 
     def __init__(self, line_name, status, reason, timestamp):
         self.line_name = line_name

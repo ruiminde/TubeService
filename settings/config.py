@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
-
 __author__ = 'Rui'
+
+DEBUG = True
 
 HTML_BACKEND_URL = "http://app.metrolisboa.pt/status/estado_Linhas.php"
 JSON_BACKEND_URL = "http://app.metrolisboa.pt/status/getLinhas.php"
