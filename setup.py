@@ -10,5 +10,6 @@ setup(
     license='',
     author='Rui Martins',
     author_email='',
+    test_suite='tests',
     description='A RESTful web service for the status of Lisboa\'s subway lines'
 )
