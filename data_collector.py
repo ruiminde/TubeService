@@ -6,12 +6,12 @@ import importlib
 import logging
 from datetime import datetime
 
+import requests
+from sqlalchemy.ext.declarative import declarative_base
+
 import settings.config as config
 from tubeservice import metro_lisboa
-import requests
 from tubeservice.models import LineStatusLog
-
-from sqlalchemy.ext.declarative import declarative_base
 
 
 Base = declarative_base()

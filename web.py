@@ -6,24 +6,28 @@ import importlib
 
 from flask import json, Flask
 import requests
-from flask_sqlalchemy import SQLAlchemy
 
+from database import db_session
 from tubeservice import metro_lisboa
 import settings.config as config
 
 app = Flask(__name__)
 app.config.from_object(config)
 
-db = SQLAlchemy(app)
-
 _backends = {
     'json': {'url': app.config['JSON_BACKEND_URL'], 'module': 'lib.json_backend'},
     'html': {'url': app.config['HTML_BACKEND_URL'], 'module': 'lib.html_backend'},
 }
 
-@app.route("/")
-@app.route("/status/")
-@app.route("/status/<line>/")
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+
+
+@app.route("/", methods=['GET'])
+@app.route("/status/", methods=['GET'])
+@app.route("/status/<line>/", methods=['GET'])
 def status(line=None):
     active_backend = _backends[app.config['ACTIVE_BACKEND']]
     backend_module = importlib.import_module(active_backend['module'])
@@ -32,6 +36,9 @@ def status(line=None):
     line_status = metro_lisboa_linestatus.get_latest(url, line)
 
     return json.jsonify(line_status)
+
+# @app.route("/status/", methods=["POST"])
+#def add(line_status)
 
 if __name__ == "__main__":
     app.run()
