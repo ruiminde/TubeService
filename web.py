@@ -4,11 +4,11 @@ __author__ = 'Rui'
 
 import importlib
 
-from flask import json, Flask
+from flask import json, request, Flask
 import requests
 
 from database import db_session
-from tubeservice import metro_lisboa
+from tubeservice import metro_lisboa, LineStatusLog
 import settings.config as config
 
 app = Flask(__name__)
@@ -37,8 +37,17 @@ def status(line=None):
 
     return json.jsonify(line_status)
 
-# @app.route("/status/", methods=["POST"])
-#def add(line_status)
+
+@app.route("/status/", methods=["POST"])
+def add():
+    line_name = request['line']
+    status = request['status']
+    reason = request['reason']
+    timestamp = request['timestamp']
+    l = LineStatusLog(line_name, status, reason, timestamp)
+    db_session.add(l)
+    db_session.commit()
+
 
 if __name__ == "__main__":
     app.run()
