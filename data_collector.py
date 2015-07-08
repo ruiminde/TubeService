@@ -4,7 +4,7 @@ __author__ = 'Rui'
 
 import importlib
 import logging
-from datetime import datetime
+import time
 
 import requests
 
@@ -23,5 +23,12 @@ def get_line_status(active_backend_name):
     logging.warning(metro_lisboa_lines._status)
 
     for line_name, line_status in metro_lisboa_lines._status.items():
-        requests.post('http://localhost:5000/status/',
-                      data=dict(line=line_name, status=line_status[0], reason=line_status[1], timestamp=datetime.now()))
+        response = requests.post('http://localhost:5000/status/',
+                                 json=dict(line=line_name, status=line_status[0], reason=line_status[1],
+                                           timestamp=time.time()))
+        logging.debug(response)
+
+
+if __name__ == '__main__':
+    logging.getLogger().setLevel(logging.DEBUG)
+    get_line_status('json')

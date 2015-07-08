@@ -3,12 +3,15 @@
 __author__ = 'Rui'
 
 import importlib
+import logging
+import datetime
 
 from flask import json, request, Flask
 import requests
 
 from database import db_session
-from tubeservice import metro_lisboa, LineStatusLog
+from tubeservice import metro_lisboa
+from tubeservice.models import LineStatusLog
 import settings.config as config
 
 app = Flask(__name__)
@@ -18,7 +21,6 @@ _backends = {
     'json': {'url': app.config['JSON_BACKEND_URL'], 'module': 'lib.json_backend'},
     'html': {'url': app.config['HTML_BACKEND_URL'], 'module': 'lib.html_backend'},
 }
-
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -40,13 +42,21 @@ def status(line=None):
 
 @app.route("/status/", methods=["POST"])
 def add():
-    line_name = request['line']
-    status = request['status']
-    reason = request['reason']
-    timestamp = request['timestamp']
+    # Deserialize payload
+    data = request.get_json()
+    logging.debug(data)
+    line_name = data['line']
+    status = data['status']
+    reason = data['reason']
+    timestamp = datetime.datetime.utcfromtimestamp(data['timestamp'])
+
+    # Create db register and write entry in the database
     l = LineStatusLog(line_name, status, reason, timestamp)
     db_session.add(l)
     db_session.commit()
+
+    # HTTP created
+    return '', 201
 
 
 if __name__ == "__main__":
