@@ -7,7 +7,6 @@ import json
 
 from tubeservice.datacontract import *
 
-
 _LINE_NAMES_MAP = {
     'azul': LINE_BLUE,
     'verde': LINE_GREEN,
@@ -48,7 +47,10 @@ def parse_response(json_text):
             line_status = _get_status(status_code)
             reason = _get_reason(reason_code)
 
-            status[line_name] = (line_status, reason)
+            if reason == REASON_UNKNOWN:
+                status[line_name] = (line_status, reason_code)
+            else:
+                status[line_name] = (line_status, reason)
 
     except (Exception, ValueError):
         logging.error("Parse failed: {}".format(json_text))

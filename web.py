@@ -4,9 +4,9 @@ __author__ = 'Rui'
 
 import importlib
 import logging
-import datetime
+from datetime import datetime
 
-from flask import json, request, Flask
+from flask import json, request, render_template, Flask
 import requests
 
 from database import db_session
@@ -40,6 +40,18 @@ def status(line=None):
     return json.jsonify(line_status)
 
 
+@app.route("/calendar/", methods=['GET'])
+def calendar():
+    return render_template('calendar.html')
+
+
+@app.route("/calendar/<date>", methods=['GET'])
+def get_incident_count(date):
+    datetime_start = datetime.strptime(date, '%Y%m%d')
+    datetime_end = datetime.strptime(str(int(date) + 1), '%Y%m%d')
+    return str(LineStatusLog.query.filter(LineStatusLog.status != 'ok',
+                                          LineStatusLog.timestamp.between(datetime_start, datetime_end)).count()), 200
+
 @app.route("/status/", methods=["POST"])
 def add():
     # Deserialize payload
@@ -48,7 +60,7 @@ def add():
     line_name = data['line']
     status = data['status']
     reason = data['reason']
-    timestamp = datetime.datetime.utcfromtimestamp(data['timestamp'])
+    timestamp = datetime.utcfromtimestamp(data['timestamp'])
 
     # Create db register and write entry in the database
     l = LineStatusLog(line_name, status, reason, timestamp)
