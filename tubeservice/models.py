@@ -24,4 +24,3 @@ class LineStatusLog(Base):
 
     def __repr__(self):
         return '<LineStatusLog %r %r %r %r>' % (self.id, self.line_name, self.status, self.timestamp)
-

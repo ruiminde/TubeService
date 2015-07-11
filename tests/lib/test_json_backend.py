@@ -9,7 +9,6 @@ import logging
 from tubeservice.datacontract import *
 from lib import json_backend
 
-
 _RESPONSE_BODY_ALL_OK = """
 {"amarela":" Ok","azul":" Ok","verde":" Ok","vermelha":" Ok","tipo_msg_am":"0","tipo_msg_az":"0","tipo_msg_vd":"0","tipo_msg_vm":"0"}
 """
@@ -62,9 +61,9 @@ class TestJSONBackend(TestCase):
     def test_parse_response_unknown_status(self):
         expected = {
             LINE_RED: (STATUS_OK, REASON_NO_PROBLEM),
-            LINE_YELLOW: (STATUS_UNKNOWN, None),
-            LINE_BLUE: (STATUS_UNKNOWN, None),
-            LINE_GREEN: (STATUS_UNKNOWN, None),
+            LINE_YELLOW: (STATUS_UNKNOWN, " abc"),
+            LINE_BLUE: (STATUS_UNKNOWN, "def"),
+            LINE_GREEN: (STATUS_UNKNOWN, "ghi"),
         }
 
         actual = json_backend.parse_response(_RESPONSE_UNKNOWN_STATUS)

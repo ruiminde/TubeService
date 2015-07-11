@@ -26,7 +26,7 @@ class LineStatus(object):
 
     def __init__(self, http_connector, backend):
         """
-
+        Initializes a new instance of the LineStatus class.
         :type http_connector: Requests
         :param backend: Module to be used to process the content from the metro website
         """
