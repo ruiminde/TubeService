@@ -22,6 +22,7 @@ _backends = {
     'html': {'url': app.config['HTML_BACKEND_URL'], 'module': 'lib.html_backend'},
 }
 
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
@@ -52,18 +53,25 @@ def get_incident_count(date):
     return str(LineStatusLog.query.filter(LineStatusLog.status != 'ok',
                                           LineStatusLog.timestamp.between(datetime_start, datetime_end)).count()), 200
 
+
 @app.route("/status/", methods=["POST"])
-def add():
+def post_status():
+    """
+    Save a new line status entry.
+    Request payload must be JSON formatted. Example payload:
+    { line: "red", status: "delay", reason: "some reason", timestamp: 1436622057 }
+    :return: HTTP response 201.
+    """
     # Deserialize payload
     data = request.get_json()
     logging.debug(data)
     line_name = data['line']
-    status = data['status']
+    line_status = data['status']
     reason = data['reason']
     timestamp = datetime.utcfromtimestamp(data['timestamp'])
 
     # Create db register and write entry in the database
-    l = LineStatusLog(line_name, status, reason, timestamp)
+    l = LineStatusLog(line_name, line_status, reason, timestamp)
     db_session.add(l)
     db_session.commit()
 
@@ -73,12 +81,3 @@ def add():
 
 if __name__ == "__main__":
     app.run()
-
-
-
-
-
-
-
-
-

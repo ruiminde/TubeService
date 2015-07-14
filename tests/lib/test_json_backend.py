@@ -33,9 +33,14 @@ _RESPONSE_BODY_ALL_PROBLEMS5 = """
 {"amarela":" Ok","azul":" Ok","verde":" Devido a avaria de comboio, a circula\u00e7\u00e3o est\u00e1 interrompida desde as 20:55. Esperamos retomar a circula\u00e7\u00e3o num per\u00edodo inferior a 15 minutos. Pedimos desculpa pelo inc\u00f3modo.","vermelha":" Ok","tipo_msg_am":"0","tipo_msg_az":"0","tipo_msg_vd":"1","tipo_msg_vm":"0"}
 """
 
+_RESPONSE_BODY_ALL_PROBLEMS6 = """
+{"amarela":" Ok","azul":" Ok","verde":" devido a avaria de comboio, a circula\u00e7\u00e3o encontra-se com perturba\u00e7\u00f5es. O tempo de espera pode ser superior ao normal. Pedimos desculpa pelo inc\u00f3modo.","vermelha":" Ok","tipo_msg_am":"0","tipo_msg_az":"0","tipo_msg_vd":"1","tipo_msg_vm":"0"}
+"""
+
 _RESPONSE_UNKNOWN_STATUS = """
 {"amarela":" abc","azul":"def","verde":"ghi","vermelha":" Ok","tipo_msg_am":"y","tipo_msg_az":"x","tipo_msg_vd":"z","tipo_msg_vm":"0"}
 """
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -122,6 +127,17 @@ class TestJSONBackend(TestCase):
         }
 
         actual = json_backend.parse_response(_RESPONSE_BODY_ALL_PROBLEMS5)
+        self.assertDictEqual(expected, actual)
+
+    def test_parse_response_problems6(self):
+        expected = {
+            LINE_RED: (STATUS_OK, REASON_NO_PROBLEM),
+            LINE_YELLOW: (STATUS_OK, REASON_NO_PROBLEM),
+            LINE_BLUE: (STATUS_OK, REASON_NO_PROBLEM),
+            LINE_GREEN: (STATUS_DELAY, REASON_TRAIN_PROBLEM),
+        }
+
+        actual = json_backend.parse_response(_RESPONSE_BODY_ALL_PROBLEMS6)
         self.assertDictEqual(expected, actual)
 
 

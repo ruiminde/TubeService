@@ -61,7 +61,7 @@ def parse_response(json_text):
 
 def _get_reason(reason_code):
     for reason_key, reason in _REASON_MAP.items():
-        if reason_key in reason_code:
+        if reason_key.upper().strip() in reason_code.upper().strip():
             return reason
     else:
         return REASON_UNKNOWN
